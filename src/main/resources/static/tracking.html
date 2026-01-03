@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Live Rider Tracking</title>
+
+  <!-- WebSocket libs -->
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+  <style>
+    body { font-family: Arial; background: #f5f5f5; }
+    .box { background: white; padding: 20px; width: 400px; margin: 60px auto; border-radius: 8px; }
+    button { margin: 5px; padding: 8px 14px; }
+    #log { margin-top: 10px; font-size: 14px; }
+  </style>
+</head>
+
+<body>
+
+<div class="box"><center>
+  <h2>Live Rider Tracking</h2>
+
+  <button onclick="connect()">Connect</button>
+  <button onclick="startLiveTracking()">Start Live Location</button>
+  <button onclick="stopLiveTracking()">Stop</button>
+
+  <p id="status">Status: Not connected</p>
+  <div id="log"></div></center>
+</div>
+
+<script>
+let stompClient = null;
+let orderId = null;
+let locationTimer = null;
+
+/* ---------------- CONNECT ---------------- */
+async function connect() {
+  const status = document.getElementById("status");
+  const log = document.getElementById("log");
+
+  status.innerText = "Fetching active order...";
+
+  try {
+    const res = await fetch("/rider/active-order?riderId=1");
+
+    if (!res.ok) {
+      status.innerText = "No active order";
+      alert("No active order for this rider");
+      return;
+    }
+
+    const data = await res.json();
+    orderId = data.orderId;
+
+    const socket = new SockJS("/ws");
+    stompClient = Stomp.over(socket);
+    stompClient.debug = null;
+
+    stompClient.connect({}, () => {
+      status.innerText = "Connected | Order: " + orderId;
+
+      stompClient.subscribe("/topic/order/" + orderId, (msg) => {
+        log.innerHTML =
+          "<b>Live Update:</b><br>" + msg.body;
+      });
+    });
+
+  } catch (err) {
+    status.innerText = "Connection failed";
+    console.error(err);
+  }
+}
+
+/* ---------------- SEND LOCATION (GPS) ---------------- */
+function sendLocation() {
+  if (!stompClient || !orderId) {
+    alert("Connect first");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const payload = {
+        orderId: orderId,
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude
+      };
+
+      stompClient.send("/app/rider/location", {}, JSON.stringify(payload));
+    },
+    () => alert("GPS permission denied")
+  );
+}
+
+/* ---------------- AUTO LIVE TRACKING ---------------- */
+function startLiveTracking() {
+  if (!stompClient || !orderId) {
+    alert("Connect first");
+    return;
+  }
+
+  if (locationTimer) return;
+
+  locationTimer = setInterval(sendLocation, 3000); // every 3 sec
+  document.getElementById("status").innerText =
+    "Live tracking started (every 3 seconds)";
+}
+
+function stopLiveTracking() {
+  clearInterval(locationTimer);
+  locationTimer = null;
+  document.getElementById("status").innerText = "Live tracking stopped";
+}
+</script>
+
+</body>
+</html>
