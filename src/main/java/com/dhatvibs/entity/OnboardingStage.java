@@ -1,4 +1,3 @@
-
 package com.dhatvibs.entity;
 
 public enum OnboardingStage {
@@ -12,7 +11,5 @@ public enum OnboardingStage {
     PAN_UPLOAD,
     DL_UPLOAD,
     KYC_SUBMITTED,
-    KYC_APPROVAL_PENDING,
-    KYC_APPROVED,
     COMPLETED
 }
