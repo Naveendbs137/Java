@@ -16,8 +16,21 @@ public class Order {
     @Column(unique = true)
     private String orderId;
 
-    private Long riderId;
+	/*
+	 * private Long riderId;
+	 */   
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(
+        name = "rider_id",
+        referencedColumnName = "id",
+        foreignKey = @ForeignKey(name = "fk_order_rider")
+    )
+    private Rider rider;
+
+    
     private String vendorShopName;
+	 
+	 
 
     @ElementCollection
     @CollectionTable(name = "order_items", joinColumns = @JoinColumn(name = "order_id"))
@@ -51,9 +64,20 @@ public class Order {
     public String getOrderId() { return orderId; }
     public void setOrderId(String orderId) { this.orderId = orderId; }
 
-    public Long getRiderId() { return riderId; }
-    public void setRiderId(Long riderId) { this.riderId = riderId; }
+	/*
+	 * public Long getRiderId() { return riderId; } public void setRiderId(Long
+	 * riderId) { this.riderId = riderId; }
+	 */ 
+    
+    public Rider getRider() {
+        return rider;
+    }
 
+    public void setRider(Rider rider) {
+        this.rider = rider;
+    }
+
+    
     public OrderStatus getOrderStatus() { return orderStatus; }
     public void setOrderStatus(OrderStatus orderStatus) { this.orderStatus = orderStatus; }
 
