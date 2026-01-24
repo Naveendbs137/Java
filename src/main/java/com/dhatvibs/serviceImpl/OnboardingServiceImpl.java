@@ -191,6 +191,107 @@ public class OnboardingServiceImpl implements OnboardingService {
         r.setIsFullyRegistered(true);
 
         repo.save(r);
+    } 
+    
+    
+    
+    @Override
+    public OnboardingStatusResponseDto getOnboardingStatus(Long riderId) {
+
+        Rider r = repo.findById(riderId)
+                .orElseThrow(() -> new RuntimeException("Rider not found"));
+
+        // ---------- Progress ----------
+        boolean appPermissionDone =
+                Boolean.TRUE.equals(r.getCameraPermission()) &&
+                Boolean.TRUE.equals(r.getForegroundLocation()) &&
+                Boolean.TRUE.equals(r.getBackgroundLocation());
+
+        boolean personalInfoDone =
+                r.getFullName() != null &&
+                r.getEmail() != null;
+
+        boolean selfieDone = r.getSelfieUrl() != null;
+
+        boolean panUploaded = r.getPanImageUrl() != null;
+
+        boolean dlUploaded =
+                r.getDlFrontImage() != null &&
+                r.getDlBackImage() != null;
+
+        boolean kycCompleted =
+                Boolean.TRUE.equals(r.getAadhaarVerified()) &&
+                panUploaded &&
+                dlUploaded;
+
+        OnboardingProgressDto progress = OnboardingProgressDto.builder()
+                .phoneVerified(r.getPhoneVerified())
+                .appPermissionDone(appPermissionDone)
+                .citySelected(r.getCity() != null)
+                .vehicleSelected(r.getVehicleType() != null)
+                .personalInfoSubmitted(personalInfoDone)
+                .selfieUploaded(selfieDone)
+                .aadharVerified(r.getAadhaarVerified())
+                .panUploaded(panUploaded)
+                .dlUploaded(dlUploaded)
+                .kycCompleted(kycCompleted)
+                .build();
+
+        // ---------- Current Stage ----------
+        OnboardingStage stage = determineStage(progress);
+
+        boolean fullyRegistered = stage == OnboardingStage.COMPLETED;
+
+        // Sync DB (important)
+        r.setOnboardingStage(stage);
+        r.setIsFullyRegistered(fullyRegistered);
+        repo.save(r);
+
+        return OnboardingStatusResponseDto.builder()
+                .success(true)
+                .message("Onboarding status fetched successfully")
+                .onboardingStage(stage)
+                .onboardingProgress(progress)
+                .isFullyRegistered(fullyRegistered)
+                .build();
     }
+
+    
+    private OnboardingStage determineStage(OnboardingProgressDto p) {
+
+        if (!p.getPhoneVerified())
+            return OnboardingStage.PHONE_VERIFICATION;
+
+        if (!p.getAppPermissionDone())
+            return OnboardingStage.APP_PERMISSIONS;
+
+        if (!p.getCitySelected())
+            return OnboardingStage.SELECT_LOCATION;
+
+        if (!p.getVehicleSelected())
+            return OnboardingStage.SELECT_VEHICLE;
+
+        if (!p.getPersonalInfoSubmitted())
+            return OnboardingStage.PERSONAL_INFO;
+
+        if (!p.getSelfieUploaded())
+            return OnboardingStage.SELFIE;
+
+        if (!p.getAadharVerified())
+            return OnboardingStage.AADHAAR;
+
+        if (!p.getPanUploaded())
+            return OnboardingStage.PAN_UPLOAD;
+
+        if (!p.getDlUploaded())
+            return OnboardingStage.DL_UPLOAD;
+
+        if (!p.getKycCompleted())
+            return OnboardingStage.KYC_SUBMITTED;
+
+        return OnboardingStage.COMPLETED;
+    }
+
+    
 
 }

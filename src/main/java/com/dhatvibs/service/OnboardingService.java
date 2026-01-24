@@ -20,5 +20,8 @@ public interface OnboardingService {
 
     
     void uploadPan(Long riderId,String panNumber, MultipartFile file);
-    void uploadDl(Long riderId,String dlNumber, MultipartFile front, MultipartFile back); 
+    void uploadDl(Long riderId,String dlNumber, MultipartFile front, MultipartFile back);  
+    
+    OnboardingStatusResponseDto getOnboardingStatus(Long riderId);
+
 }

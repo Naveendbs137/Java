@@ -218,6 +218,7 @@ package com.dhatvibs.controller;
 
 import com.dhatvibs.dto.*;
 import com.dhatvibs.service.OnboardingService;
+import com.dhatvibs.serviceImpl.OnboardingServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -229,10 +230,13 @@ import java.util.Map;
 @RequestMapping("/api/onboarding")
 public class OnboardingController {
 
+    private final OnboardingServiceImpl onboardingServiceImpl;
+
     private final OnboardingService service;
 
-    public OnboardingController(OnboardingService service) {
+    public OnboardingController(OnboardingService service, OnboardingServiceImpl onboardingServiceImpl) {
         this.service = service;
+        this.onboardingServiceImpl = onboardingServiceImpl;
     }
 
     /* ================= OTP (PUBLIC) ================= */
@@ -415,5 +419,25 @@ public class OnboardingController {
                 Map.of("message", "Driving License uploaded successfully")
         );
     }
+    
+    
+    
+	/*
+	 * @GetMapping("/onboarding-status") public OnboardingStatusResponseDto
+	 * onboardingStatus( Authentication authentication ) { Long riderId = (Long)
+	 * authentication.getPrincipal(); return
+	 * onboardingService.getOnboardingStatus(riderId); }
+	 */ 
+    
+    @GetMapping("/onboarding-status")
+    public OnboardingStatusResponseDto onboardingStatus(
+            Authentication authentication
+    ) {
+        Long riderId = (Long) authentication.getPrincipal();
+        return service.getOnboardingStatus(riderId);
+    }
+
+
+
 
 }
