@@ -19,6 +19,6 @@ public interface OnboardingService {
     void verifyAadhaarOtp(String aadhaarNumber, String otp);
 
     
-    void uploadPan(Long riderId, MultipartFile file);
-    void uploadDl(Long riderId, MultipartFile front, MultipartFile back); 
+    void uploadPan(Long riderId,String panNumber, MultipartFile file);
+    void uploadDl(Long riderId,String dlNumber, MultipartFile front, MultipartFile back); 
 }

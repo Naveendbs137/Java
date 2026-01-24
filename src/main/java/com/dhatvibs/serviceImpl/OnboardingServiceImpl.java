@@ -1,4 +1,4 @@
-package com.dhatvibs.serviceImpl;
+ package com.dhatvibs.serviceImpl;
 
 import com.dhatvibs.dto.*;
 import com.dhatvibs.entity.*;
@@ -127,21 +127,70 @@ public class OnboardingServiceImpl implements OnboardingService {
     
     
     
+	/*
+	 * @Override public void uploadPan(Long id, MultipartFile f) { Rider r =
+	 * repo.findById(id).orElseThrow(); r.setPanImageUrl(azure.upload(f, "pan"));
+	 * r.setOnboardingStage(OnboardingStage.DL_UPLOAD); repo.save(r); }
+	 */ 
+    
     @Override
-    public void uploadPan(Long id, MultipartFile f) {
-        Rider r = repo.findById(id).orElseThrow();
-        r.setPanImageUrl(azure.upload(f, "pan"));
+    public void uploadPan(Long id, String panNumber, MultipartFile file) {
+
+        Rider r = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Rider not found"));
+
+        // ✅ PAN format validation (India)
+        if (panNumber == null || !panNumber.matches("[A-Z]{5}[0-9]{4}[A-Z]")) {
+            throw new RuntimeException("Invalid PAN number");
+        }
+
+        // Upload PAN image
+        String panImageUrl = azure.upload(file, "pan");
+
+        // Save PAN details
+        r.setPanNumber(panNumber);
+        r.setPanImageUrl(panImageUrl);
+        r.setPanStatus("submitted"); // or "pending"
+        r.setPanRejectionReason(null);
+
+        // Move onboarding forward
         r.setOnboardingStage(OnboardingStage.DL_UPLOAD);
+
         repo.save(r);
     }
 
+
+	/*
+	 * @Override public void uploadDl(Long id, MultipartFile f, MultipartFile b) {
+	 * Rider r = repo.findById(id).orElseThrow(); r.setDlFrontImage(azure.upload(f,
+	 * "dl")); r.setDlBackImage(azure.upload(b, "dl"));
+	 * r.setOnboardingStage(OnboardingStage.COMPLETED);
+	 * r.setIsFullyRegistered(true); repo.save(r); }
+	 */ 
     @Override
-    public void uploadDl(Long id, MultipartFile f, MultipartFile b) {
-        Rider r = repo.findById(id).orElseThrow();
-        r.setDlFrontImage(azure.upload(f, "dl"));
-        r.setDlBackImage(azure.upload(b, "dl"));
+    public void uploadDl(Long id, String dlNumber, MultipartFile front, MultipartFile back) {
+
+        Rider r = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Rider not found"));
+
+        // ✅ Basic DL number validation (India – simple)
+        if (dlNumber == null || dlNumber.length() < 10) {
+            throw new RuntimeException("Invalid Driving License number");
+        }
+
+        String frontUrl = azure.upload(front, "dl");
+        String backUrl  = azure.upload(back, "dl");
+
+        r.setDlNumber(dlNumber);
+        r.setDlFrontImage(frontUrl);
+        r.setDlBackImage(backUrl);
+        r.setDlStatus("submitted");
+        r.setDlRejectionReason(null);
+
         r.setOnboardingStage(OnboardingStage.COMPLETED);
         r.setIsFullyRegistered(true);
+
         repo.save(r);
     }
+
 }

@@ -6,5 +6,7 @@ public class PersonalInfoDto {
     public String fullName;
     public LocalDate dob;
     public String gender;
+    public String primaryPhone;
+    public String secondaryPhone;
     public String email;
 }

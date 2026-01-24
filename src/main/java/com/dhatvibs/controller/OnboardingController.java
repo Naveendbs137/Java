@@ -358,32 +358,62 @@ public class OnboardingController {
 
     /* ================= PAN (PROTECTED) ================= */
 
+	/*
+	 * @PostMapping(value = "/pan", consumes = "multipart/form-data") public
+	 * ResponseEntity<Map<String, String>> pan(
+	 * 
+	 * @RequestPart MultipartFile file, Authentication authentication) {
+	 * 
+	 * Long riderId = (Long) authentication.getPrincipal();
+	 * service.uploadPan(riderId, file);
+	 * 
+	 * return ResponseEntity.ok( Map.of("message", "PAN uploaded successfully") ); }
+	 */ 
+    
     @PostMapping(value = "/pan", consumes = "multipart/form-data")
     public ResponseEntity<Map<String, String>> pan(
-            @RequestPart MultipartFile file,
+            @RequestPart("panNumber") String panNumber,
+            @RequestPart("file") MultipartFile file,
             Authentication authentication) {
 
         Long riderId = (Long) authentication.getPrincipal();
-        service.uploadPan(riderId, file);
+        service.uploadPan(riderId, panNumber, file);
 
         return ResponseEntity.ok(
                 Map.of("message", "PAN uploaded successfully")
         );
     }
 
+
     /* ================= DL (PROTECTED) ================= */
 
+	/*
+	 * @PostMapping(value = "/dl", consumes = "multipart/form-data") public
+	 * ResponseEntity<Map<String, String>> dl(
+	 * 
+	 * @RequestPart MultipartFile front,
+	 * 
+	 * @RequestPart MultipartFile back, Authentication authentication) {
+	 * 
+	 * Long riderId = (Long) authentication.getPrincipal();
+	 * service.uploadDl(riderId, front, back);
+	 * 
+	 * return ResponseEntity.ok( Map.of("message",
+	 * "Driving license uploaded successfully") ); }
+	 */
     @PostMapping(value = "/dl", consumes = "multipart/form-data")
     public ResponseEntity<Map<String, String>> dl(
-            @RequestPart MultipartFile front,
-            @RequestPart MultipartFile back,
+            @RequestPart("dlNumber") String dlNumber,
+            @RequestPart("front") MultipartFile front,
+            @RequestPart("back") MultipartFile back,
             Authentication authentication) {
 
         Long riderId = (Long) authentication.getPrincipal();
-        service.uploadDl(riderId, front, back);
+        service.uploadDl(riderId, dlNumber, front, back);
 
         return ResponseEntity.ok(
-                Map.of("message", "Driving license uploaded successfully")
+                Map.of("message", "Driving License uploaded successfully")
         );
     }
+
 }

@@ -408,7 +408,32 @@ public class Rider {
 	public void setDlBackImage(String dlBackImage) {
 		this.dlBackImage = dlBackImage;
 	} 
-	
+	/* ================= KYC – DRIVING LICENSE ================= */
+
+	public String getDlNumber() {
+	    return dlNumber;
+	}
+
+	public void setDlNumber(String dlNumber) {
+	    this.dlNumber = dlNumber;
+	}
+
+	public String getDlStatus() {
+	    return dlStatus;
+	}
+
+	public void setDlStatus(String dlStatus) {
+	    this.dlStatus = dlStatus;
+	}
+
+	public String getDlRejectionReason() {
+	    return dlRejectionReason;
+	}
+
+	public void setDlRejectionReason(String dlRejectionReason) {
+	    this.dlRejectionReason = dlRejectionReason;
+	}
+
 	
 	public String getAadhaarNumber() {
 	    return aadhaarNumber;
@@ -448,7 +473,35 @@ public class Rider {
 
 	public void setAadhaarVerifiedAt(LocalDateTime aadhaarVerifiedAt) {
 	    this.aadhaarVerifiedAt = aadhaarVerifiedAt;
+	} 
+	
+	
+	/* ================= KYC – PAN ================= */
+
+	public String getPanNumber() {
+	    return panNumber;
 	}
+
+	public void setPanNumber(String panNumber) {
+	    this.panNumber = panNumber;
+	}
+
+	public String getPanStatus() {
+	    return panStatus;
+	}
+
+	public void setPanStatus(String panStatus) {
+	    this.panStatus = panStatus;
+	}
+
+	public String getPanRejectionReason() {
+	    return panRejectionReason;
+	}
+
+	public void setPanRejectionReason(String panRejectionReason) {
+	    this.panRejectionReason = panRejectionReason;
+	}
+
 
 	
 	
