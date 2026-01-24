@@ -67,8 +67,8 @@ public class OnboardingServiceImpl implements OnboardingService {
     public void saveLocation(Long id, LocationDto d) {
         Rider r = repo.findById(id).orElseThrow();
         r.setCity(d.city);
-        r.setState(d.state);
-        r.setPincode(d.pincode);
+       // r.setState(d.state);
+        //r.setPincode(d.pincode);
         r.setOnboardingStage(OnboardingStage.SELECT_VEHICLE);
         repo.save(r);
     }
