@@ -290,7 +290,49 @@ public class OnboardingServiceImpl implements OnboardingService {
             return OnboardingStage.KYC_SUBMITTED;
 
         return OnboardingStage.COMPLETED;
+    } 
+    
+    
+    
+    @Override
+    public KycCompleteResponseDto completeKyc(Long riderId) {
+
+        Rider r = repo.findById(riderId)
+                .orElseThrow(() -> new RuntimeException("Rider not found"));
+
+        // ✅ KYC checks
+        boolean aadhaarDone = Boolean.TRUE.equals(r.getAadhaarVerified());
+        boolean panDone = r.getPanImageUrl() != null;
+        boolean dlDone =
+                r.getDlFrontImage() != null &&
+                r.getDlBackImage() != null;
+
+        if (!(aadhaarDone && panDone && dlDone)) {
+            return KycCompleteResponseDto.builder()
+                    .success(false)
+                    .message("Onboarding steps not completed")
+                    .isFullyRegistered(false)
+                    .build();
+        }
+
+        // ✅ Mark completed
+        r.setOnboardingStage(OnboardingStage.COMPLETED);
+        r.setIsFullyRegistered(true);
+        repo.save(r);
+
+        OnboardingProgressDto progress = OnboardingProgressDto.builder()
+                .kycCompleted(true)
+                .build();
+
+        return KycCompleteResponseDto.builder()
+                .success(true)
+                .message("KYC completed and rider fully registered")
+                .onboardingStage(OnboardingStage.COMPLETED)
+                .onboardingProgress(progress)
+                .isFullyRegistered(true)
+                .build();
     }
+
 
     
 

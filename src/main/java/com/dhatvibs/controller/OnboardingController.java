@@ -439,5 +439,34 @@ public class OnboardingController {
 
 
 
+    @RestController
+    @RequestMapping("/api/rider")
+    public class RiderController {
 
+        private final OnboardingService onboardingService;
+
+        public RiderController(OnboardingService onboardingService) {
+            this.onboardingService = onboardingService;
+        }
+
+        @PostMapping("/complete-kyc")
+        public ResponseEntity<KycCompleteResponseDto> completeKyc(
+                Authentication authentication
+        ) {
+            Long riderId = (Long) authentication.getPrincipal();
+
+            KycCompleteResponseDto response =
+                    onboardingService.completeKyc(riderId);
+
+            if (!response.isSuccess()) {
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            return ResponseEntity.ok(response);
+        }
+    }
+
+    
+    
+    
 }
