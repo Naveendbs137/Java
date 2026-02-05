@@ -1,11 +1,3 @@
-/*
- * package com.dhatvibs.dto;
- * 
- * public class VerifyAadhaarOtpDto {
- * 
- * }
- */ 
-
 
 package com.dhatvibs.dto;
 

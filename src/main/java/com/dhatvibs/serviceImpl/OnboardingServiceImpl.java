@@ -99,29 +99,72 @@ public class OnboardingServiceImpl implements OnboardingService {
     }
     
     
+	/*
+	 * @Override public void sendAadhaarOtp(String aadhaarNumber) {
+	 * 
+	 * // Basic validation if (aadhaarNumber == null || aadhaarNumber.length() !=
+	 * 12) { throw new RuntimeException("Invalid Aadhaar number"); }
+	 * 
+	 * // MOCK OTP FLOW // Real integration later: UIDAI / Digilocker
+	 * System.out.println("Aadhaar OTP sent: 007007"); }
+	 */
+  
     @Override
-    public void sendAadhaarOtp(String aadhaarNumber) {
+    public void sendAadhaarOtp(Long riderId, String aadhaarNumber) {
 
-        // Basic validation
-        if (aadhaarNumber == null || aadhaarNumber.length() != 12) {
+        if (aadhaarNumber == null || !aadhaarNumber.matches("\\d{12}")) {
             throw new RuntimeException("Invalid Aadhaar number");
         }
 
-        // MOCK OTP FLOW
-        // Real integration later: UIDAI / Digilocker
+        Rider r = repo.findById(riderId)
+                .orElseThrow(() -> new RuntimeException("Rider not found"));
+
+        r.setAadhaarNumber(aadhaarNumber);
+        r.setAadhaarOtp("007007");
+        r.setAadhaarOtpExpiresAt(LocalDateTime.now().plusMinutes(5));
+        r.setAadhaarVerified(false);
+
+        repo.save(r);
+
         System.out.println("Aadhaar OTP sent: 007007");
     }
-
+    
+    
     @Override
-    public void verifyAadhaarOtp(String aadhaarNumber, String otp) {
+    public void verifyAadhaarOtp(Long riderId, String otp) {
+
+        Rider r = repo.findById(riderId)
+                .orElseThrow(() -> new RuntimeException("Rider not found"));
 
         if (!"007007".equals(otp)) {
             throw new RuntimeException("Invalid Aadhaar OTP");
         }
 
-        // Mark Aadhaar as verified (DB update later)
-        System.out.println("Aadhaar verified successfully");
+        if (r.getAadhaarOtpExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Aadhaar OTP expired");
+        }
+
+        r.setAadhaarVerified(true);
+        r.setAadhaarVerifiedAt(LocalDateTime.now());
+        r.setAadhaarOtp(null);
+
+        r.setOnboardingStage(OnboardingStage.PAN_UPLOAD);
+
+        repo.save(r);
     }
+
+    
+    
+    
+	/*
+	 * @Override public void verifyAadhaarOtp(String aadhaarNumber, String otp) {
+	 * 
+	 * if (!"007007".equals(otp)) { throw new
+	 * RuntimeException("Invalid Aadhaar OTP"); }
+	 * 
+	 * // Mark Aadhaar as verified (DB update later)
+	 * System.out.println("Aadhaar verified successfully"); }
+	 */
 
     
     
