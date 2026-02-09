@@ -21,7 +21,7 @@ public class Rider {
 
     private String fullName;
     private String email;
-    private String vehicleType;
+    private String type;   //vehicle change here
 
     /* ================= BANK ================= */
 
@@ -146,9 +146,13 @@ public class Rider {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public String getVehicleType() { return vehicleType; }
-    public void setVehicleType(String vehicleType) { this.vehicleType = vehicleType; }
-
+	/*
+	 * public String getVehicleType() { return vehicleType; } public void
+	 * setVehicleType(String vehicleType) { this.vehicleType = vehicleType; }
+	 */
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+    
     public String getBankName() { return bankName; }
     public void setBankName(String bankName) { this.bankName = bankName; }
 

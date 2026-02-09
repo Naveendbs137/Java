@@ -1,6 +1,15 @@
 package com.dhatvibs.dto;
 
 public class VehicleDto {
-    public String vehicleType;
+    public String type; 
+    public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	
 
 }

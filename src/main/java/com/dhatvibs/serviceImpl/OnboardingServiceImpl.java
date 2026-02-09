@@ -73,13 +73,33 @@ public class OnboardingServiceImpl implements OnboardingService {
         repo.save(r);
     }
 
+	/*
+	 * @Override public void saveVehicle(Long id, VehicleDto d) { Rider r =
+	 * repo.findById(id).orElseThrow(); r.setVehicleType(d.vehicleType);
+	 * r.setOnboardingStage(OnboardingStage.PERSONAL_INFO); repo.save(r); }
+	 */  
+    
     @Override
     public void saveVehicle(Long id, VehicleDto d) {
-        Rider r = repo.findById(id).orElseThrow();
-        r.setVehicleType(d.vehicleType);
+
+        // ✅ Validation
+        if (d.getType() == null || d.getType().isBlank()) {
+            throw new RuntimeException("Vehicle type is required");
+        }
+
+        Rider r = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Rider not found"));
+
+        // ✅ Save vehicle (frontend uses `type`)
+        r.setType(d.getType());
+
+        // ✅ Move onboarding forward
         r.setOnboardingStage(OnboardingStage.PERSONAL_INFO);
+
         repo.save(r);
     }
+
+
 
     @Override
     public void savePersonalInfo(Long id, PersonalInfoDto d) {
@@ -271,7 +291,7 @@ public class OnboardingServiceImpl implements OnboardingService {
                 .phoneVerified(r.getPhoneVerified())
                 .appPermissionDone(appPermissionDone)
                 .citySelected(r.getCity() != null)
-                .vehicleSelected(r.getVehicleType() != null)
+                .vehicleSelected(r.getType() != null)
                 .personalInfoSubmitted(personalInfoDone)
                 .selfieUploaded(selfieDone)
                 .aadharVerified(r.getAadhaarVerified())

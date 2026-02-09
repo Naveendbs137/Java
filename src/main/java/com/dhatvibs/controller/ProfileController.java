@@ -233,7 +233,7 @@ public class ProfileController {
     // 4️⃣ Vehicle
     @GetMapping("/vehicle")
     public String vehicle() {
-        return getLoggedInRider().getVehicleType();
+        return getLoggedInRider().getType();
     }
 
     // 5️⃣ Insurance
