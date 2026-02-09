@@ -5,6 +5,9 @@ package com.dhatvibs.controller;
 import com.dhatvibs.dto.*;
 import com.dhatvibs.service.OnboardingService;
 import com.dhatvibs.serviceImpl.OnboardingServiceImpl;
+
+import jakarta.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -27,9 +30,18 @@ public class OnboardingController {
 
     /* ================= OTP (PUBLIC) ================= */
 
+	/*
+	 * @PostMapping("/send-otp") public ResponseEntity<Map<String, String>> sendOtp(
+	 * 
+	 * @RequestBody SendOtpDto dto) {
+	 * 
+	 * service.sendOtp(dto); return ResponseEntity.ok( Map.of("message",
+	 * "OTP sent successfully") ); }
+	 */
+    
     @PostMapping("/send-otp")
     public ResponseEntity<Map<String, String>> sendOtp(
-            @RequestBody SendOtpDto dto) {
+            @Valid @RequestBody SendOtpDto dto) {
 
         service.sendOtp(dto);
         return ResponseEntity.ok(

@@ -24,18 +24,33 @@ public class OnboardingServiceImpl implements OnboardingService {
         this.azure = a;
     }
 
+	/*
+	 * @Override public void sendOtp(SendOtpDto dto) { Rider r =
+	 * repo.findByPhoneNumber(dto.getPhoneNumber()).orElse(new Rider());
+	 * r.setPhoneNumber(dto.getPhoneNumber()); r.setOtpCode("007007");
+	 * r.setOtpExpiresAt(LocalDateTime.now().plusMinutes(5)); repo.save(r); }
+	 */ 
     @Override
     public void sendOtp(SendOtpDto dto) {
-        Rider r = repo.findByPhoneNumber(dto.getPhoneNumber()).orElse(new Rider());
-        r.setPhoneNumber(dto.getPhoneNumber());
+
+        String phone = dto.getPhone();
+
+        Rider r = repo.findByPhone(phone)
+                .orElseGet(Rider::new);
+
+        r.setPhone(phone);
+        r.setPhoneVerified(false);
         r.setOtpCode("007007");
         r.setOtpExpiresAt(LocalDateTime.now().plusMinutes(5));
+        r.setOnboardingStage(OnboardingStage.PHONE_VERIFICATION);
+
         repo.save(r);
     }
 
+
     @Override
     public TokenResponseDto verifyOtp(VerifyOtpDto dto) {
-        Rider r = repo.findByPhoneNumber(dto.getPhoneNumber()).orElseThrow();
+        Rider r = repo.findByPhone(dto.getPhone()).orElseThrow();
 
         if (!"007007".equals(dto.getOtp()))
             throw new RuntimeException("Invalid OTP");

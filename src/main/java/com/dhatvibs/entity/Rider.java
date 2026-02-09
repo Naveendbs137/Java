@@ -51,8 +51,15 @@ public class Rider {
 
     /* PHONE */
     private String countryCode = "+91";
-    @Column(unique = true)
-    private String phoneNumber;
+	/*
+	 * @Column(unique = true) private String phone;
+	 */
+	/*
+	 * @Column(unique = true, nullable = false, length = 10) private String phone;
+	 */
+    @Column(name = "phone", unique = true, nullable = false, length = 10)
+    private String phone;
+
     private Boolean phoneVerified = false;
 
     /* OTP */
@@ -215,8 +222,8 @@ public class Rider {
     public String getInsuranceUrl() { return insuranceUrl; }
     public void setInsuranceUrl(String insuranceUrl) { this.insuranceUrl = insuranceUrl; }
 
-    public String getPhoneNumber() { return phoneNumber; }
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
 
     public Boolean getPhoneVerified() { return phoneVerified; }
     public void setPhoneVerified(Boolean phoneVerified) { this.phoneVerified = phoneVerified; }

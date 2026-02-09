@@ -207,7 +207,7 @@ public class ProfileController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String phoneNumber = auth.getName(); // comes from JWT
 
-        return riderRepository.findByPhoneNumber(phoneNumber)
+        return riderRepository.findByPhone(phoneNumber)
                 .orElseThrow(() -> new RuntimeException("Rider not found"));
     }
 
